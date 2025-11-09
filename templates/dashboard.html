@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
   <section class="hero">
-    <h2>Welcome, [User]</h2>
+    <!-- Use the passed username variable -->
+    <h2>Welcome, {{ username }}!</h2>
     <p>Your personalized dashboard with progress, alerts, and certificates.</p>
   </section>
 
   <section class="panel">
     <h3>My Course Progress</h3>
     <div class="progress-list">
+      <!-- TODO: This part can be made dynamic later by querying UserProgress model -->
       <div class="progress-item">
         <span>Scientific Coffee Processing</span>
         <div class="progress-bar"><div style="width: 40%"></div></div>

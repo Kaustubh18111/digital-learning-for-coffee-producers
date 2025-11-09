@@ -2,41 +2,15 @@
 {% block content %}
   <h2>Modular Course Library</h2>
   <div class="course-grid">
+    {% for course in courses %}
     <div class="course-card">
       <div class="thumb">IMG</div>
-      <h3>Scientific Coffee Processing</h3>
-      <p>Explore fermentation science and drying optimization.</p>
-      <a href="/course/1" class="btn small">Start Learning</a>
+      <h3>{{ course.title }}</h3>
+      <p>{{ course.description }}</p>
+      <a href="{{ url_for('course_detail', course_id=course.id) }}" class="btn small">Start Learning</a>
     </div>
-    <div class="course-card">
-      <div class="thumb">IMG</div>
-      <h3>Soil Health</h3>
-      <p>Improve nutrient cycling and soil structure.</p>
-      <a href="/course/2" class="btn small">Start Learning</a>
-    </div>
-    <div class="course-card">
-      <div class="thumb">IMG</div>
-      <h3>Pest Management</h3>
-      <p>Identify and respond to common coffee pests.</p>
-      <a href="/course/3" class="btn small">Start Learning</a>
-    </div>
-    <div class="course-card">
-      <div class="thumb">IMG</div>
-      <h3>Post-Harvest Quality</h3>
-      <p>Maintain bean integrity through storage and transport.</p>
-      <a href="/course/4" class="btn small">Start Learning</a>
-    </div>
-    <div class="course-card">
-      <div class="thumb">IMG</div>
-      <h3>Climate Adaptation</h3>
-      <p>Strategies for resilience in changing conditions.</p>
-      <a href="/course/5" class="btn small">Start Learning</a>
-    </div>
-    <div class="course-card">
-      <div class="thumb">IMG</div>
-      <h3>Cup Quality Fundamentals</h3>
-      <p>Understand flavor development from seed to cup.</p>
-      <a href="/course/6" class="btn small">Start Learning</a>
-    </div>
+    {% else %}
+      <p>No courses are available yet.</p>
+    {% endfor %}
   </div>
 {% endblock %}
