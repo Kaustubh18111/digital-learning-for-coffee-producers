@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+  <article class="course-detail">
+    <header>
+      <h2>Scientific Coffee Processing</h2>
+      <p class="muted">Course ID: {{ course_id if course_id is defined else 'N/A' }}</p>
+    </header>
+
+    <section class="video">
+      <div class="video-placeholder">Embedded Video Lesson Placeholder</div>
+    </section>
+
+    <section class="modules">
+      <h3>Modules</h3>
+      <ol>
+        <li>Module 1: Fermentation</li>
+        <li>Module 2: Drying Curves</li>
+        <li>Module 3: Defect Reduction</li>
+      </ol>
+    </section>
+
+    <section class="quiz">
+      <h3>Interactive Quiz</h3>
+      <form id="quiz-form">
+        <div class="quiz-item">
+          <label>1) Optimal fermentation temperature range?
+            <input type="text" name="q1" placeholder="Your answer" />
+          </label>
+        </div>
+        <div class="quiz-item">
+          <label>2) What affects drying curve shape the most?
+            <input type="text" name="q2" placeholder="Your answer" />
+          </label>
+        </div>
+        <button type="submit" class="btn">Submit Quiz</button>
+      </form>
+    </section>
+  </article>
+{% endblock %}

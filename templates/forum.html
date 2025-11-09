@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+  <section class="forum">
+    <h2>Community Q&amp;A Forum</h2>
+
+    <div class="ask-form">
+      <h3>Ask a Question</h3>
+      <form action="/api/new_post" method="POST" id="new-post-form">
+        <label>Subject
+          <input type="text" name="title" placeholder="Subject" required />
+        </label>
+        <label>Body
+          <textarea name="content" rows="5" placeholder="Describe your question" required></textarea>
+        </label>
+        <button type="submit" class="btn">Submit</button>
+      </form>
+    </div>
+
+    <div class="forum-list">
+      <h3>Recent Posts</h3>
+      <ul class="posts">
+        <li class="post-item">
+          <h4>How to reduce over-fermentation?</h4>
+          <p class="meta">by user123 · 5 replies</p>
+        </li>
+        <li class="post-item">
+          <h4>Best shade trees for Arabica?</h4>
+          <p class="meta">by growerA · 2 replies</p>
+        </li>
+        <li class="post-item">
+          <h4>Identifying coffee berry borer early</h4>
+          <p class="meta">by fincaBravo · 7 replies</p>
+        </li>
+        <li class="post-item">
+          <h4>Moisture targets before storage</h4>
+          <p class="meta">by qualityNerd · 3 replies</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+{% endblock %}
