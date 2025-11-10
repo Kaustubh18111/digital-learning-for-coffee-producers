@@ -144,17 +144,18 @@ def seed_db_command():
         user1 = User(username='Kaustubh', email='test@example.com')
         user1.password = 'password123'
         db.session.add(user1)
-
         course1 = Course(title='Scientific Coffee Processing', description='Explore fermentation science and drying optimization.')
         course2 = Course(title='Soil Health', description='Improve nutrient cycling and soil structure.')
         course3 = Course(title='Pest Management', description='Identify and respond to common coffee pests.')
-        db.session.add_all([course1, course2, course3])
+        playlist_course = Course(title='Coffee Production Video Series', description='Curated YouTube playlist covering coffee production topics.')
+        db.session.add_all([course1, course2, course3, playlist_course])
         db.session.commit()
 
         mod1_1 = Module(title='Introduction to Fermentation', video_url='https://www.youtube.com/embed/dQw4w9WgXcQ', course_id=course1.id)
         mod1_2 = Module(title='Understanding Drying Curves', video_url='https://www.youtube.com/embed/dQw4w9WgXcQ', course_id=course1.id)
         mod2_1 = Module(title='Composting Strategies', video_url='https://www.youtube.com/embed/dQw4w9WgXcQ', course_id=course2.id)
-        db.session.add_all([mod1_1, mod1_2, mod2_1])
+        playlist_module = Module(title='Playlist Overview', video_url='https://www.youtube.com/embed/videoseries?list=PLdGYyxCUP1CXok8WekAxSETrlgPo_yfgA', course_id=playlist_course.id)
+        db.session.add_all([mod1_1, mod1_2, mod2_1, playlist_module])
         db.session.commit()
 
         post1 = ForumPost(title='How to reduce over-fermentation?', content='I am having trouble with my beans tasting sour. Any tips?', user_id=user1.id)
