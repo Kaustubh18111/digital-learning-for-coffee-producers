@@ -5,6 +5,8 @@ import {
   onAuthStateChanged, 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
+  GoogleAuthProvider,
+  signInWithPopup,
   signOut 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { 
@@ -44,6 +46,8 @@ export {
   onAuthStateChanged, 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
+  GoogleAuthProvider,
+  signInWithPopup,
   signOut,
   collection,
   doc,

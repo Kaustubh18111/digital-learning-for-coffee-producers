@@ -1,10 +1,13 @@
 import { auth, db, onAuthStateChanged, doc, getDoc } from './firebase-init.js';
 
 onAuthStateChanged(auth, async (user) => {
+  const usernameSpan = document.getElementById('username-placeholder');
+  const progressList = document.getElementById('progress-list');
+  const guestMode = localStorage.getItem('guest_mode') === '1';
+
   if (user) {
-    const usernameSpan = document.getElementById('username-placeholder');
-    const userDocRef = doc(db, 'users', user.uid);
     try {
+      const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists() && userDoc.data().username) {
         usernameSpan.textContent = userDoc.data().username;
@@ -15,8 +18,9 @@ onAuthStateChanged(auth, async (user) => {
       console.error('Error fetching user profile', e);
       usernameSpan.textContent = user.email;
     }
-
-    const progressList = document.getElementById('progress-list');
     progressList.innerHTML = '<p>Course progress tracking coming soon.</p>';
+  } else if (guestMode) {
+    usernameSpan.textContent = 'Guest';
+    progressList.innerHTML = '<p>Guest mode: sign in to track your progress.</p>';
   }
 });

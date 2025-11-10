@@ -30,11 +30,20 @@ const loadFragments = async () => {
 
 onAuthStateChanged(auth, (user) => {
   const isLoginPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/index.html');
+  const guestMode = localStorage.getItem('guest_mode') === '1';
+
   if (user) {
     if (isLoginPage) {
       window.location.href = 'dashboard.html';
     }
   } else {
+    if (guestMode) {
+      // Allow navigation without redirect for guest
+      if (isLoginPage) {
+        window.location.href = 'dashboard.html';
+      }
+      return; // Skip redirect if guest
+    }
     if (!isLoginPage) {
       window.location.href = 'index.html';
     }
