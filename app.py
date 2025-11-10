@@ -8,8 +8,9 @@ app.config['SECRET_KEY'] = 'a-very-secret-key-that-you-must-change'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///coffee.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
+from extensions import db, bcrypt
+db.init_app(app)
+bcrypt.init_app(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login_page'

@@ -1,4 +1,4 @@
-from app import db, bcrypt
+from extensions import db, bcrypt
 from flask_login import UserMixin
 
 # Models updated for functional MVP -----------------------------------------
