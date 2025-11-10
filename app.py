@@ -151,11 +151,27 @@ def seed_db_command():
         db.session.add_all([course1, course2, course3, playlist_course])
         db.session.commit()
 
+        # START: Add Low Intervention Farming Course
+        course4 = Course(title='Low Intervention Farming', 
+                         description='A course on low-intervention and regenerative farming principles from the provided YouTube playlist.')
+        db.session.add(course4)
+        db.session.commit() # Commit to get the course4.id
+
+        # TODO (User): Replace the titles and video IDs below
+        # Playlist: https://youtube.com/playlist?list=PLdGYyxCUP1CXok8WekAxSETrlgPo_yfgA
+        # The 'video_url' MUST be in the 'embed' format: 'https://www.youtube.com/embed/VIDEO_ID_HERE'
+
+        mod4_1 = Module(title='Module 1: Title Here', video_url='https://www.youtube.com/embed/VIDEO_ID_HERE', course_id=course4.id)
+        mod4_2 = Module(title='Module 2: Title Here', video_url='https://www.youtube.com/embed/VIDEO_ID_HERE', course_id=course4.id)
+        mod4_3 = Module(title='Module 3: Title Here', video_url='https://www.youtube.com/embed/VIDEO_ID_HERE', course_id=course4.id)
+        # Add more modules as needed...
+        # END: Add Low Intervention Farming Course
+
         mod1_1 = Module(title='Introduction to Fermentation', video_url='https://www.youtube.com/embed/dQw4w9WgXcQ', course_id=course1.id)
         mod1_2 = Module(title='Understanding Drying Curves', video_url='https://www.youtube.com/embed/dQw4w9WgXcQ', course_id=course1.id)
         mod2_1 = Module(title='Composting Strategies', video_url='https://www.youtube.com/embed/dQw4w9WgXcQ', course_id=course2.id)
         playlist_module = Module(title='Playlist Overview', video_url='https://www.youtube.com/embed/videoseries?list=PLdGYyxCUP1CXok8WekAxSETrlgPo_yfgA', course_id=playlist_course.id)
-        db.session.add_all([mod1_1, mod1_2, mod2_1, playlist_module])
+        db.session.add_all([mod1_1, mod1_2, mod2_1, playlist_module, mod4_1, mod4_2, mod4_3])
         db.session.commit()
 
         post1 = ForumPost(title='How to reduce over-fermentation?', content='I am having trouble with my beans tasting sour. Any tips?', user_id=user1.id)
