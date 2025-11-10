@@ -60,7 +60,32 @@ python3 -m http.server 8080
 - `posts/{postId}`: `{ title, content, userId, createdAt }`
 
 ## Adding Courses/Modules
-You can manually add documents in the Firebase Console or seed using a temporary script (not included). Ensure `video_url` uses the embed format: `https://www.youtube.com/embed/VIDEO_ID`.
+You can use the built-in hardcoded course or add documents in the Firebase Console. Ensure `video_url` uses the embed format: `https://www.youtube.com/embed/VIDEO_ID`.
+
+### Option A: Built-in hardcoded course
+- ID: `low-intervention-farming`
+- Modules stored client-side with localStorage progress. Accessible at:
+  - `courses.html` (shows a card)
+  - `course_detail.html?id=low-intervention-farming`
+
+### Option B: Manual Firestore course (example)
+1. In Firebase Console → Firestore Database, click “Start collection”
+   - Collection ID: `courses`
+   - Next → Document ID: Auto-ID
+   - Add fields:
+     - `title` (string): `Low Intervention Farming`
+     - `description` (string): `A course on low-intervention and regenerative farming principles.`
+   - Save
+2. Open the new course document → “Start collection”
+   - Collection ID: `modules`
+   - Next → Document ID: Auto-ID
+   - Add fields:
+     - `title` (string): `Introduction to Low Intervention`
+     - `video_url` (string): `https://www.youtube.com/embed/8q_1dD3G1-s`
+   - Save
+3. Refresh your site:
+   - `courses.html` will list the course
+   - Clicking it opens `course_detail.html` and shows the video
 
 ## Security Rules
 See `firestore.rules` for basic protections. Deploy rules:

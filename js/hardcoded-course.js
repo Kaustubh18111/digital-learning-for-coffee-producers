@@ -8,7 +8,7 @@ export const HARDCODED_COURSE = {
     {
       id: 'intro',
       title: 'Introduction to Low Intervention',
-      video_url: 'https://www.youtube.com/embed/VIDEO_ID_1'
+      video_url: 'https://www.youtube.com/embed/8q_1dD3G1-s'
     },
     {
       id: 'soil-health',
