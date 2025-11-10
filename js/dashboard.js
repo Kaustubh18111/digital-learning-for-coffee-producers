@@ -1,4 +1,6 @@
 import { auth, db, onAuthStateChanged, doc, getDoc } from './firebase-init.js';
+import { HARDCODED_COURSE } from './hardcoded-course.js';
+import { getProgressSummary } from './progress.js';
 
 onAuthStateChanged(auth, async (user) => {
   const usernameSpan = document.getElementById('username-placeholder');
@@ -18,9 +20,27 @@ onAuthStateChanged(auth, async (user) => {
       console.error('Error fetching user profile', e);
       usernameSpan.textContent = user.email;
     }
-    progressList.innerHTML = '<p>Course progress tracking coming soon.</p>';
+    // Show progress for the hardcoded course
+    const s = getProgressSummary();
+    progressList.innerHTML = `
+      <div class="course-card">
+        <h4>${HARDCODED_COURSE.title}</h4>
+        <p>${HARDCODED_COURSE.description}</p>
+        <p><strong>Progress:</strong> ${s.done}/${s.total} (${s.percent}%)</p>
+        <a class="btn small" href="course_detail.html?id=${HARDCODED_COURSE.id}">Continue</a>
+      </div>
+    `;
   } else if (guestMode) {
     usernameSpan.textContent = 'Guest';
-    progressList.innerHTML = '<p>Guest mode: sign in to track your progress.</p>';
+    const s = getProgressSummary();
+    progressList.innerHTML = `
+      <div class="course-card">
+        <h4>${HARDCODED_COURSE.title}</h4>
+        <p>${HARDCODED_COURSE.description}</p>
+        <p><strong>Progress:</strong> ${s.done}/${s.total} (${s.percent}%)</p>
+        <a class="btn small" href="course_detail.html?id=${HARDCODED_COURSE.id}">Start</a>
+      </div>
+      <p class="muted">Guest mode stores progress in this browser only.</p>
+    `;
   }
 });
