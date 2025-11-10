@@ -11,7 +11,10 @@
       {"source": "/dashboard", "destination": "/dashboard.html"},
       {"source": "/courses", "destination": "/courses.html"},
       {"source": "/forum", "destination": "/forum.html"},
-      {"source": "/tools", "destination": "/tools.html"}
+      {"source": "/forum", "destination": "/forum.html"}
     ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
   }
 }

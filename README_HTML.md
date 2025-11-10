@@ -13,7 +13,6 @@ dashboard.html        # Protected dashboard
 courses.html          # Lists courses from Firestore
 course_detail.html    # Displays selected course & modules
 forum.html            # Community posts (CRUD limited)
-tools.html            # Placeholder tools area
 css/style.css         # Shared styles
 js/firebase-init.js   # Firebase SDK + config
 js/main.js            # Auth guard + fragment loader
@@ -27,6 +26,7 @@ fragments/footer.html # Reusable footer
 firestore.rules       # Firestore security rules
 firebase.json         # Hosting rewrites
 README_HTML.md        # This documentation
+ - (Removed deprecated Tools page)
 ```
 
 ## Firebase Setup
@@ -79,6 +79,7 @@ firebase deploy --only hosting
 - Implement course completion metrics
 - Replace placeholder module titles
 - Add image uploads via Firebase Storage
+ - Deprecated `tools.html` page and related navbar/rewrite removed.
 
 ## Notes
 Original Python/Flask backend removed. All dynamic logic now client-side. Remove unused backend files (`app.py`, `models.py`, `extensions.py`, `templates/`, `static/`).
