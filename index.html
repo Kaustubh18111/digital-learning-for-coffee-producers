@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login • CoffeeLearn</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="auth-body">
+  <main class="auth-container">
+    <section class="auth-card">
+      <h1>Welcome to CoffeeLearn</h1>
+      <p class="muted">Digital Learning Platform for Coffee Producers</p>
+      <div id="flash-message" class="alert" style="display:none;"></div>
+      <div class="auth-forms">
+        <div class="auth-form">
+          <h2>Login</h2>
+          <form id="login-form">
+            <label>Email
+              <input type="email" id="login-email" placeholder="you@example.com" required />
+            </label>
+            <label>Password
+              <input type="password" id="login-password" placeholder="Enter password" required />
+            </label>
+            <button type="submit" class="btn primary">Login</button>
+          </form>
+        </div>
+        <div class="divider"><span>or</span></div>
+        <div class="auth-form">
+          <h2>Sign Up</h2>
+          <form id="signup-form">
+            <label>Username (Optional)
+              <input type="text" id="signup-username" placeholder="Choose a username" />
+            </label>
+            <label>Email
+              <input type="email" id="signup-email" placeholder="you@example.com" required />
+            </label>
+            <label>Password
+              <input type="password" id="signup-password" placeholder="Create a password" required />
+            </label>
+            <button type="submit" class="btn">Create Account</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="js/firebase-init.js"></script>
+  <script type="module" src="js/auth.js"></script>
+</body>
+</html>

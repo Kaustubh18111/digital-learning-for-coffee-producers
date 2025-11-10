@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "firestore.rules",
+      "README_HTML.md",
+      ".git"
+    ],
+    "rewrites": [
+      {"source": "/dashboard", "destination": "/dashboard.html"},
+      {"source": "/courses", "destination": "/courses.html"},
+      {"source": "/forum", "destination": "/forum.html"},
+      {"source": "/tools", "destination": "/tools.html"}
+    ]
+  }
+}
