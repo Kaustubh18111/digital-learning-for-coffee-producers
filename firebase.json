@@ -9,7 +9,8 @@
     ],
     "rewrites": [
       {"source": "/dashboard", "destination": "/dashboard.html"},
-      {"source": "/courses", "destination": "/courses.html"}
+      {"source": "/courses", "destination": "/courses.html"},
+      {"source": "/forum", "destination": "/forum.html"}
     ]
   },
   "firestore": {

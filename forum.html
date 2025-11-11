@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forum • CoffeeLearn</title>
+  <link rel="stylesheet" href="css/style.css" />
+  </head>
+<body>
+  <div id="navbar-placeholder"></div>
+  <main class="container forum">
+    <section class="ask-form panel">
+      <h3>Ask a Question</h3>
+      <form id="new-post-form">
+        <label>Title
+          <input type="text" id="post-title" required />
+        </label>
+        <label>Content
+          <textarea id="post-content" rows="4" required></textarea>
+        </label>
+        <button type="submit" class="btn">Post</button>
+      </form>
+    </section>
+    <section class="forum-list">
+      <h3>Recent Posts</h3>
+      <ul class="posts" id="posts-list"></ul>
+    </section>
+    <section class="forum-list panel">
+      <h3>IndiaCoffee Reddit</h3>
+      <p class="muted">Latest posts from <a href="https://www.reddit.com/r/IndiaCoffee/" target="_blank" rel="noopener">r/IndiaCoffee</a></p>
+      <ul class="posts" id="reddit-posts"></ul>
+    </section>
+  </main>
+  <div id="footer-placeholder"></div>
+  <script type="module" src="js/firebase-init.js"></script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/forum.js"></script>
+</body>
+</html>
