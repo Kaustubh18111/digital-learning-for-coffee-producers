@@ -2,7 +2,7 @@ import { auth, db, collection, addDoc, getDocs, onAuthStateChanged, query, order
 
 const postsList = document.getElementById('posts-list');
 const newPostForm = document.getElementById('new-post-form');
-const redditList = document.getElementById('reddit-posts'); // This might be null now
+const redditList = document.getElementById('reddit-posts'); // Might be null in new layout
 
 const renderPosts = async () => {
   if (!postsList) return;
@@ -46,20 +46,18 @@ if (newPostForm) {
   newPostForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!auth.currentUser) {
-      alert("You must be logged in to post.");
+      alert('You must be logged in to post.');
       return;
     }
     const title = document.getElementById('post-title').value.trim();
     const content = document.getElementById('post-content').value.trim();
-
     if (!title || !content) return;
-
     try {
       await addDoc(collection(db, 'posts'), {
         title,
         content,
         userId: auth.currentUser.uid,
-        createdAt: new Date() // Use JS Date, Firestore handles it
+        createdAt: new Date()
       });
       newPostForm.reset();
       renderPosts();
