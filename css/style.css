@@ -152,6 +152,9 @@ input:focus, textarea:focus { outline:2px solid #c6f6d5; }
   margin-bottom: 1.5rem;
   min-height: 450px; /* Set a min height */
   position: relative;
+  /* Aspect Ratio trick */
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
 }
 
 .main-content #youtube-player {

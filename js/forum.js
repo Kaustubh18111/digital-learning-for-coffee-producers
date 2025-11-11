@@ -2,7 +2,7 @@ import { auth, db, collection, addDoc, getDocs, onAuthStateChanged, query, order
 
 const postsList = document.getElementById('posts-list');
 const newPostForm = document.getElementById('new-post-form');
-const redditList = document.getElementById('reddit-posts'); // Might be null in new layout
+const redditList = document.getElementById('reddit-posts'); // This element is no longer used, but we'll check for it
 
 const renderPosts = async () => {
   if (!postsList) return;
@@ -46,18 +46,20 @@ if (newPostForm) {
   newPostForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!auth.currentUser) {
-      alert('You must be logged in to post.');
+      alert("You must be logged in to post.");
       return;
     }
     const title = document.getElementById('post-title').value.trim();
     const content = document.getElementById('post-content').value.trim();
+
     if (!title || !content) return;
+
     try {
       await addDoc(collection(db, 'posts'), {
         title,
         content,
         userId: auth.currentUser.uid,
-        createdAt: new Date()
+        createdAt: new Date() // Use JS Date, Firestore handles it
       });
       newPostForm.reset();
       renderPosts();
@@ -66,3 +68,37 @@ if (newPostForm) {
     }
   });
 }
+
+// Fetch and render Reddit posts from r/IndiaCoffee
+const renderReddit = async () => {
+  if (!redditList) return; // Safely exit if element not found
+  redditList.innerHTML = '<li>Loading Reddit posts...</li>';
+  try {
+    const res = await fetch('https://www.reddit.com/r/IndiaCoffee/.json?limit=10');
+    if (!res.ok) throw new Error('Failed to load Reddit');
+    const data = await res.json();
+    const items = (data?.data?.children || []).filter(c => c && c.data);
+    if (items.length === 0) {
+      redditList.innerHTML = '<li>No Reddit posts found.</li>';
+      return;
+    }
+    redditList.innerHTML = '';
+    for (const { data: p } of items) {
+      const li = document.createElement('li');
+      li.className = 'post-item';
+      const url = p.url_overridden_by_dest || ('https://www.reddit.com' + p.permalink);
+      li.innerHTML = `
+        <h4><a href="${url}" target="_blank" rel="noopener">${p.title || 'Untitled Reddit Post'}</a></h4>
+        <div class="meta">by u/${p.author} • r/${p.subreddit} • ${p.ups} upvotes</div>
+        <p class="muted">${p.selftext_html ? '' : ''}</p>
+      `;
+      redditList.appendChild(li);
+    }
+  } catch (e) {
+    console.error('Error loading Reddit', e);
+    redditList.innerHTML = '<li>Error loading Reddit posts.</li>';
+  }
+};
+
+// Load Reddit posts always (guest and authed users)
+renderReddit();
