@@ -11,11 +11,16 @@
 
   <main class="container">
     <div id="flash-message"></div>
-    <!-- Dashboard sections removed as per request -->
+    <section class="panel dashboard-welcome">
+      <div class="welcome-text">
+        <h2 id="greeting">Welcome, <span id="username-placeholder">Farmer</span> 👋</h2>
+        <p id="welcome-sub" class="muted">Here’s a quick look at your learning today.</p>
+      </div>
+    </section>
+
     <section class="panel">
-      <h2>Dashboard Removed</h2>
-      <p class="muted">The personalized dashboard has been disabled. You can access your course directly below.</p>
-      <a href="course_detail.html?id=low_intervention" class="btn">Go to Course</a>
+      <h3>My Learning Progress</h3>
+      <div id="progress-modern"></div>
     </section>
   </main>
 
@@ -23,6 +28,6 @@
 
   <script type="module" src="js/firebase-init.js"></script>
   <script type="module" src="js/main.js"></script>
-  <!-- dashboard.js removed; no dynamic dashboard rendering needed -->
+  <script type="module" src="js/dashboard.js"></script>
 </body>
 </html>
