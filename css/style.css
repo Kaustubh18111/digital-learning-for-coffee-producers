@@ -106,6 +106,22 @@ input:focus, textarea:focus { outline:2px solid #c6f6d5; }
 .alert.success { background: #f0fff4; border: 1px solid #c6f6d5; color: #2f855a; }
 .alert.danger { background: #fff5f5; border: 1px solid #fed7d7; color: #c53030; }
 
+/* Dashboard Modern Enhancements */
+.dashboard-welcome { display:flex; align-items:center; justify-content:space-between; background:linear-gradient(135deg,#f0fff4,#e6fffa); }
+.dashboard-welcome h2 { margin:0; font-size:1.9rem; }
+.progress-grid { display:grid; grid-template-columns:160px 1fr; gap:2rem; align-items:center; }
+@media (max-width: 700px){ .progress-grid { grid-template-columns:1fr; } }
+.donut { display:block; }
+.donut-bg { fill:none; stroke:#edf2f7; }
+.donut-fg { fill:none; stroke:var(--accent); transform:rotate(-90deg); transform-origin:50% 50%; transition:stroke-dashoffset 1s ease; }
+.donut-label { font-size:1.1rem; fill:var(--text); font-weight:600; }
+.progress-meta .course-title { margin:.2rem 0 .4rem; font-size:1.1rem; }
+.progress-meta .course-desc { font-size:.75rem; color:var(--muted); margin:0 0 .9rem; }
+.bar-row { display:flex; align-items:center; gap:.75rem; margin-bottom:1rem; }
+.bar-track { flex:1; height:12px; background:#edf2f7; border-radius:6px; overflow:hidden; position:relative; }
+.bar-fill { background:var(--accent); height:100%; width:0; animation:growWidth 1.2s ease forwards; }
+@keyframes growWidth { from { width:0; } }
+
 /* --- New Skillshare UI Overhaul --- */
     
 /* 1. Main Course Player Layout */

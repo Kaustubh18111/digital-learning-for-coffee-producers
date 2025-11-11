@@ -11,13 +11,17 @@
 
   <main class="container">
     <div id="flash-message"></div>
-    <section class="hero">
-      <h2>Welcome, <span id="username-placeholder">Farmer</span>!</h2>
-      <p>Your personalized dashboard with progress, alerts, and certificates.</p>
+
+    <section class="panel dashboard-welcome">
+      <div class="welcome-text">
+        <h2 id="greeting">Welcome, <span id="username-placeholder">Farmer</span> 👋</h2>
+        <p id="welcome-sub" class="muted">Here’s a quick look at your learning today.</p>
+      </div>
     </section>
+
     <section class="panel">
-      <h3>My Course Progress</h3>
-      <div class="progress-list" id="progress-list"></div>
+      <h3>My Learning Progress</h3>
+      <div id="progress-modern"></div>
     </section>
   </main>
 
