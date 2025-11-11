@@ -26,20 +26,43 @@
   <script type="module" src="js/main.js"></script>
   <script type="module">
     const list = document.getElementById('reddit-posts');
+    const BASE = 'https://www.reddit.com/r/IndiaCoffee/.json?limit=12';
+    const SOURCES = [
+      BASE,
+      'https://cors.isomorphic-git.org/' + BASE,
+      'https://api.allorigins.win/raw?url=' + encodeURIComponent(BASE),
+      'https://corsproxy.io/?' + encodeURIComponent(BASE)
+    ];
+
+    async function fetchWithFallback(urls) {
+      let lastError;
+      for (const u of urls) {
+        try {
+          const res = await fetch(u, { cache: 'no-store' });
+          if (!res.ok) { lastError = new Error('HTTP ' + res.status); continue; }
+          const data = await res.json();
+          return data;
+        } catch (e) {
+          lastError = e;
+        }
+      }
+      throw lastError || new Error('All fetch attempts failed');
+    }
+
     async function renderReddit() {
       if (!list) return;
       list.innerHTML = '<li class="post-item">Loading Reddit posts...</li>';
       try {
-        const res = await fetch('https://www.reddit.com/r/IndiaCoffee/.json?limit=12');
-        if (!res.ok) throw new Error('Failed to load Reddit');
-        const data = await res.json();
-        const items = (data?.data?.children || []).filter(c => c && c.data);
+        const data = await fetchWithFallback(SOURCES);
+        const items = (data && data.data && Array.isArray(data.data.children)) ? data.data.children : [];
         if (items.length === 0) {
           list.innerHTML = '<li class="post-item">No Reddit posts found.</li>';
           return;
         }
         list.innerHTML = '';
-        for (const { data: p } of items) {
+        for (const child of items) {
+          const p = child && child.data ? child.data : null;
+          if (!p) continue;
           const url = p.url_overridden_by_dest || ('https://www.reddit.com' + p.permalink);
           const li = document.createElement('li');
           li.className = 'post-item';
@@ -51,7 +74,11 @@
         }
       } catch (e) {
         console.error('Error loading Reddit', e);
-        list.innerHTML = '<li class="post-item">Error loading Reddit posts.</li>';
+        list.innerHTML = `
+          <li class="post-item">
+            Could not load Reddit posts due to CORS. 
+            <a href="https://www.reddit.com/r/IndiaCoffee/" target="_blank" rel="noopener">Open r/IndiaCoffee on Reddit</a>.
+          </li>`;
       }
     }
     renderReddit();
