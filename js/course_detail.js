@@ -1,8 +1,10 @@
-import { HARDCODED_COURSE } from './hardcoded-course.js';
-import { markModuleComplete, isModuleCompleted, getProgressSummary } from './progress.js';
+import { auth, db, doc, getDoc, collection, getDocs, query, orderBy, onAuthStateChanged } from './firebase-init.js';
+import { loadUserProgress, markModuleComplete, isModuleCompleted, getCourseProgress } from './progress.js';
 
 let player;
 let currentModuleId = null;
+let currentCourseId = null;
+let courseModules = [];
 
 const titleEl = document.getElementById('course-title');
 const titleSidebarEl = document.getElementById('course-title-sidebar');
@@ -11,85 +13,114 @@ const modulesList = document.getElementById('modules-list');
 const progressSummaryEl = document.getElementById('progress-summary');
 
 function updateProgressUI() {
-  const s = getProgressSummary();
-  if(progressSummaryEl) progressSummaryEl.textContent = `Progress: ${s.done}/${s.total} (${s.percent}%)`;
-
-  HARDCODED_COURSE.modules.forEach(mod => {
+  if (!currentCourseId) return;
+  const s = getCourseProgress(currentCourseId, courseModules.length);
+  if (progressSummaryEl) progressSummaryEl.textContent = `Progress: ${s.done}/${s.total} (${s.percent}%)`;
+  courseModules.forEach(mod => {
     const checkbox = document.getElementById(`check-${mod.id}`);
-    if (checkbox && isModuleCompleted(mod.id)) {
+    if (checkbox && isModuleCompleted(currentCourseId, mod.id)) {
       checkbox.checked = true;
     }
   });
 }
 
 function loadModule(moduleId) {
-  const mod = HARDCODED_COURSE.modules.find(m => m.id === moduleId);
+  const mod = courseModules.find(m => m.id === moduleId);
   if (!mod) return;
   currentModuleId = mod.id;
-
   if (player) {
     player.loadVideoById(mod.video_id);
   } else {
     player = new YT.Player('youtube-player', {
-      height: '100%', // Will be controlled by CSS
-      width: '100%', // Will be controlled by CSS
+      height: '100%',
+      width: '100%',
       videoId: mod.video_id,
       playerVars: { 'playsinline': 1, 'modestbranding': 1, 'rel': 0 },
       events: { 'onStateChange': onPlayerStateChange }
     });
   }
-
   document.querySelectorAll('.module-item').forEach(item => item.classList.remove('active'));
   const activeItem = document.querySelector(`li[data-module-id="${mod.id}"]`);
   if (activeItem) activeItem.classList.add('active');
 }
 
 function onPlayerStateChange(event) {
-  if (event.data == YT.PlayerState.ENDED) {
-    if (currentModuleId) {
-      markModuleComplete(currentModuleId);
+  if (event.data === YT.PlayerState.ENDED) {
+    if (currentCourseId && currentModuleId) {
+      markModuleComplete(currentCourseId, currentModuleId);
       updateProgressUI();
     }
   }
 }
 
-window.onYouTubeIframeAPIReady = function() {
-  if (HARDCODED_COURSE.modules.length > 0) {
-    loadModule(HARDCODED_COURSE.modules[0].id);
+window.onYouTubeIframeAPIReady = function () {
+  if (courseModules.length > 0) {
+    loadModule(courseModules[0].id);
   }
 };
 
-function renderPage() {
-  const course = HARDCODED_COURSE;
-  if (!titleEl || !titleSidebarEl || !descEl || !modulesList) return;
+async function renderPage() {
+  currentCourseId = new URLSearchParams(window.location.search).get('id');
+  if (!currentCourseId) {
+    if (titleEl) titleEl.textContent = 'Course not found.';
+    return;
+  }
+  try {
+    // Fetch Course Doc
+    const courseRef = doc(db, 'courses', currentCourseId);
+    const courseSnap = await getDoc(courseRef);
+    if (!courseSnap.exists()) {
+      if (titleEl) titleEl.textContent = 'Course not found.';
+      return;
+    }
+    const course = courseSnap.data();
+    if (titleEl) titleEl.textContent = course.title;
+    if (titleSidebarEl) titleSidebarEl.textContent = course.title;
+    if (descEl) descEl.textContent = course.description;
 
-  titleEl.textContent = course.title;
-  titleSidebarEl.textContent = course.title;
-  descEl.textContent = course.description;
+    // Fetch Modules (ordered)
+    const modulesRef = collection(db, 'courses', currentCourseId, 'modules');
+    const modulesQuery = query(modulesRef, orderBy('order'));
+    const modulesSnap = await getDocs(modulesQuery);
+    courseModules = modulesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-  modulesList.innerHTML = '';
-  course.modules.forEach((mod, index) => {
-    const li = document.createElement('li');
-    li.className = 'list-group-item list-group-item-action module-item';
-    if(index === 0) li.classList.add('active');
-    li.dataset.moduleId = mod.id;
+    // Render Modules list
+    if (modulesList) {
+      modulesList.innerHTML = '';
+      courseModules.forEach((mod, index) => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item list-group-item-action module-item';
+        if (index === 0) li.classList.add('active');
+        li.dataset.moduleId = mod.id;
+        li.innerHTML = `
+          <input type="checkbox" class="form-check-input" id="check-${mod.id}" ${isModuleCompleted(currentCourseId, mod.id) ? 'checked' : ''} disabled>
+          <span>${mod.title}</span>
+        `;
+        li.addEventListener('click', () => loadModule(mod.id));
+        modulesList.appendChild(li);
+      });
+    }
 
-    li.innerHTML = `
-      <input type="checkbox" class="form-check-input" id="check-${mod.id}" ${isModuleCompleted(mod.id) ? 'checked' : ''} disabled>
-      <span>${mod.title}</span>
-    `;
+    // Update initial progress UI
+    updateProgressUI();
+    // Load first video if API already ready
+    if (typeof YT !== 'undefined' && YT.Player && courseModules.length) {
+      loadModule(courseModules[0].id);
+    }
+  } catch (e) {
+    console.error('Error loading course:', e);
+    if (titleEl) titleEl.textContent = 'Error loading course.';
+  }
+}
 
-    li.addEventListener('click', () => {
-      loadModule(mod.id);
-    });
-
-    modulesList.appendChild(li);
-  });
-
-  updateProgressUI();
+function initTabs() {
+  // Bootstrap handles tab activation; placeholder for any future custom logic
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderPage();
-  // Bootstrap tabs are now handled automatically by the Bootstrap JS bundle
+  initTabs();
+  onAuthStateChanged(auth, async (user) => {
+    await loadUserProgress(user ? user.uid : null);
+    await renderPage();
+  });
 });

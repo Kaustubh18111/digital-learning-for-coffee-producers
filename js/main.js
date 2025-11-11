@@ -1,4 +1,5 @@
 import { auth, onAuthStateChanged, signOut } from './firebase-init.js';
+import { loadUserProgress } from './progress.js';
 
 const loadFragments = async () => {
   // Load Sidebar
@@ -47,9 +48,11 @@ const loadFragments = async () => {
   }
 };
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   const isLoginPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/index.html');
   const guestMode = localStorage.getItem('guest_mode') === '1';
+  // Load progress as soon as auth state is known
+  await loadUserProgress(user ? user.uid : null);
 
   if (user) {
     if (isLoginPage) {

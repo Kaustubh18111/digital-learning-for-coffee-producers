@@ -1,113 +1,115 @@
-import { auth, db, onAuthStateChanged, doc, getDoc } from './firebase-init.js';
-import { HARDCODED_COURSE } from './hardcoded-course.js';
-import { getProgressSummary } from './progress.js';
+import { auth, db, onAuthStateChanged, doc, getDoc, collection, getDocs } from './firebase-init.js';
+import { loadUserProgress, getCourseProgress } from './progress.js';
 
-// Function to render the ApexChart
-function renderProgressChart(summary) {
+const usernameSpan = document.getElementById('username-placeholder');
+const progressList = document.getElementById('progress-list-minimal');
+const chartContainer = document.getElementById('chart-container');
+
+function renderMainChart(allProgress) {
+  let totalModules = 0;
+  let totalDone = 0;
+  allProgress.forEach(course => {
+    totalDone += course.progress.done;
+    totalModules += course.progress.total;
+  });
+  const overallPercent = totalModules === 0 ? 0 : Math.round((totalDone / totalModules) * 100);
   const options = {
-    chart: {
-      type: 'radialBar',
-      height: 520, // Increased vertical height
-      sparkline: {
-        enabled: false // Disable sparkline to allow standard padding
-      }
-    },
-    series: [summary.percent],
+    chart: { type: 'radialBar', height: 350, sparkline: { enabled: true } },
+    series: [overallPercent],
     plotOptions: {
       radialBar: {
         startAngle: -90,
         endAngle: 90,
-        track: {
-          background: "#e7e7e7",
-          strokeWidth: '97%',
-        },
+        track: { background: '#e7e7e7', strokeWidth: '97%' },
         dataLabels: {
-          name: {
-            show: true,
-            offsetY: -10,
-            fontSize: '1.2rem',
-            color: '#888'
-          },
-          value: {
-            offsetY: 5,
-            fontSize: '2.5rem',
-            color: '#111',
-            formatter: function (val) {
-              return val + "%";
-            }
-          }
+          name: { show: true, offsetY: -10, fontSize: '1.2rem', color: '#888' },
+          value: { offsetY: 5, fontSize: '2.5rem', color: '#111', formatter: (val) => val + '%' }
         }
       }
     },
-    fill: {
-      colors: ['#2f855a'] // Our --bs-primary color
-    },
-    stroke: {
-      lineCap: 'round'
-    },
-    labels: [`${summary.done} / ${summary.total} Modules`],
+    fill: { colors: ['var(--bs-success)'] },
+    stroke: { lineCap: 'round' },
+    labels: [`${totalDone} / ${totalModules} Modules`]
   };
-
-  const chartContainer = document.getElementById('chart-container');
   if (chartContainer) {
-    chartContainer.innerHTML = ''; // Clear old chart
+    chartContainer.innerHTML = '';
     const chart = new ApexCharts(chartContainer, options);
     chart.render();
   }
 }
 
-// Function to render the "Continue Learning" card
-function renderProgressList(summary) {
-  const progressList = document.getElementById('progress-list-minimal');
-  if (progressList) {
-    const s = summary;
+function renderCourseCards(allProgress) {
+  if (!progressList) return;
+  if (allProgress.length === 0) {
     progressList.innerHTML = `
-      <div class="d-flex flex-column h-100">
-        <img src="${HARDCODED_COURSE.thumbnail}" class="card-img-top mb-3 rounded" alt="${HARDCODED_COURSE.title}">
-        <h5 class="card-title">${HARDCODED_COURSE.title}</h5>
-        <p class="card-text small text-muted">${HARDCODED_COURSE.description}</p>
-        <div class="mt-auto">
-          <div class="progress mb-2" style="height: 10px;">
-            <div class="progress-bar bg-success" role="progressbar" style="width: ${s.percent}%" aria-valuenow="${s.percent}"></div>
-          </div>
-          <p class="small mb-2"><strong>Progress:</strong> ${s.done}/${s.total} (${s.percent}%)</p>
-          <a class="btn btn-success w-100" href="course_detail.html?id=${HARDCODED_COURSE.id}">
-            ${s.done > 0 ? 'Continue Learning' : 'Start Course'}
-          </a>
-        </div>
-      </div>
-    `;
+      <div class="col-12"><div class="alert alert-secondary mb-0">
+        You haven't started any courses yet. <a href="courses.html" class="alert-link">Browse courses</a>
+      </div></div>`;
+    return;
   }
+  let html = '';
+  allProgress.forEach(course => {
+    const s = course.progress;
+    html += `
+      <div class="col">
+        <div class="card shadow-sm h-100">
+          <img src="${course.thumbnail || ''}" class="card-img-top" alt="${course.title}">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">${course.title}</h5>
+            <div class="mt-auto">
+              <div class="progress mb-2" style="height: 10px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: ${s.percent}%" aria-valuenow="${s.percent}"></div>
+              </div>
+              <p class="small mb-2"><strong>Progress:</strong> ${s.done}/${s.total} (${s.percent}%)</p>
+              <a class="btn btn-success w-100" href="course_detail.html?id=${course.id}">
+                ${s.done > 0 ? 'Continue Learning' : 'Start Course'}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  });
+  progressList.innerHTML = html;
 }
 
-// Main Auth Listener
 onAuthStateChanged(auth, async (user) => {
-  const usernameSpan = document.getElementById('username-placeholder');
   const guestMode = localStorage.getItem('guest_mode') === '1';
+  if (!user && !guestMode) {
+    if (usernameSpan) usernameSpan.textContent = '...';
+    if (progressList) progressList.innerHTML = '';
+    if (chartContainer) chartContainer.innerHTML = '';
+    return;
+  }
 
+  await loadUserProgress(user ? user.uid : null);
+
+  // Gather list of started courses for logged-in users
+  let allProgressData = [];
   if (user) {
-    try {
-      const userDocRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists() && userDoc.data().username) {
-        usernameSpan.textContent = userDoc.data().username;
-      } else {
-        usernameSpan.textContent = user.email;
+    const progressRef = doc(db, 'users', user.uid, 'progress', 'all-courses');
+    const progressSnap = await getDoc(progressRef);
+    if (progressSnap.exists()) {
+      const progressData = progressSnap.data();
+      for (const courseId of Object.keys(progressData)) {
+        const courseRef = doc(db, 'courses', courseId);
+        const courseSnap = await getDoc(courseRef);
+        if (!courseSnap.exists()) continue;
+        const modulesRef = collection(db, 'courses', courseId, 'modules');
+        const modulesSnap = await getDocs(modulesRef);
+        const progress = getCourseProgress(courseId, modulesSnap.size);
+        allProgressData.push({ id: courseId, ...courseSnap.data(), progress });
       }
-    } catch (e) {
-      console.error('Error fetching user profile', e);
-      usernameSpan.textContent = user.email;
     }
-
-    // Show progress for the hardcoded course
-    const s = getProgressSummary();
-    renderProgressChart(s);
-    renderProgressList(s);
-
   } else if (guestMode) {
-    usernameSpan.textContent = 'Guest';
-    const s = getProgressSummary();
-    renderProgressChart(s);
-    renderProgressList(s);
+    // For guest mode, no way to know list of courses from Firestore; assume the single course path via local cache keys
+    // This keeps dashboard minimal for guests
+    // Skipping guest courses aggregation to avoid listing non-existent IDs
+  }
+
+  renderMainChart(allProgressData);
+  renderCourseCards(allProgressData);
+
+  if (usernameSpan) {
+    usernameSpan.textContent = user ? (user.displayName || user.email) : 'Guest';
   }
 });
