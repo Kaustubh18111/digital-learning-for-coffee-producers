@@ -10,8 +10,12 @@ const loadCourses = async () => {
       grid.innerHTML = '<p>No courses are available yet.</p>';
       return;
     }
+    let foundHardcodedInFirestore = false;
     querySnapshot.forEach((docSnap) => {
       const course = docSnap.data();
+      if (course.title === HARDCODED_COURSE.title) {
+        foundHardcodedInFirestore = true;
+      }
       html += `
         <div class="course-card">
           <div class="thumb">IMG</div>
@@ -21,9 +25,8 @@ const loadCourses = async () => {
         </div>
       `;
     });
-    // Append hardcoded course if not already present (avoid duplicates by checking title match)
-    const exists = html.includes(HARDCODED_COURSE.title);
-    if (!exists) {
+    // Only show the hardcoded fallback if Firestore does NOT contain it.
+    if (!foundHardcodedInFirestore) {
       html += `
         <div class="course-card">
           <div class="thumb">IMG</div>
