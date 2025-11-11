@@ -4,34 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Forum • CoffeeLearn</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css" />
   </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
   <div id="navbar-placeholder"></div>
-  <main class="container forum">
-    <section class="ask-form panel">
-      <h3>Ask a Question</h3>
-      <form id="new-post-form">
-        <label>Title
-          <input type="text" id="post-title" required />
-        </label>
-        <label>Content
-          <textarea id="post-content" rows="4" required></textarea>
-        </label>
-        <button type="submit" class="btn">Post</button>
-      </form>
-    </section>
-    <section class="forum-list">
-      <h3>Recent Posts</h3>
-      <ul class="posts" id="posts-list"></ul>
-    </section>
-    <section class="forum-list panel">
-      <h3>IndiaCoffee Reddit</h3>
-      <p class="muted">Latest posts from <a href="https://www.reddit.com/r/IndiaCoffee/" target="_blank" rel="noopener">r/IndiaCoffee</a></p>
-      <ul class="posts" id="reddit-posts"></ul>
-    </section>
+
+  <main class="container-fluid container-xl my-4">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h3 class_="card-title mb-3">Ask a Question</h3>
+            <form id="new-post-form">
+              <div class="mb-3">
+                <input type="text" class="form-control" id="post-title" placeholder="Post Title" required />
+              </div>
+              <div class="mb-3">
+                <textarea class="form-control" id="post-content" rows="4" placeholder="Your question..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-success">Post</button>
+            </form>
+          </div>
+        </div>
+
+        <h3 class="mb-3">Recent Posts</h3>
+        <div class="list-group" id="posts-list">
+          </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">From r/IndiaCoffee</h5>
+            <div class="list-group list-group-flush" id="reddit-posts">
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
+
   <div id="footer-placeholder"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script type="module" src="js/firebase-init.js"></script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/forum.js"></script>

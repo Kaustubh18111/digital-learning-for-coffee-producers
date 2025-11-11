@@ -5,6 +5,7 @@
       "firebase.json",
       "firestore.rules",
       "README_HTML.md",
+      "README.md",
       ".git"
     ],
     "rewrites": [

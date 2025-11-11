@@ -2,67 +2,111 @@ import { auth, db, onAuthStateChanged, doc, getDoc } from './firebase-init.js';
 import { HARDCODED_COURSE } from './hardcoded-course.js';
 import { getProgressSummary } from './progress.js';
 
-function renderModernProgress(container, summary) {
-  // Donut chart dimensions
-  const size = 160;
-  const stroke = 14;
-  const radius = (size - stroke) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (summary.percent / 100) * circumference;
+// Function to render the ApexChart
+function renderProgressChart(summary) {
+  const options = {
+    chart: {
+      type: 'radialBar',
+      height: 350,
+      sparkline: {
+        enabled: true
+      }
+    },
+    series: [summary.percent],
+    plotOptions: {
+      radialBar: {
+        startAngle: -90,
+        endAngle: 90,
+        track: {
+          background: "#e7e7e7",
+          strokeWidth: '97%',
+        },
+        dataLabels: {
+          name: {
+            show: true,
+            offsetY: -10,
+            fontSize: '1.2rem',
+            color: '#888'
+          },
+          value: {
+            offsetY: 5,
+            fontSize: '2.5rem',
+            color: '#111',
+            formatter: function (val) {
+              return val + "%";
+            }
+          }
+        }
+      }
+    },
+    fill: {
+      colors: ['#2f855a'] // Our --bs-primary color
+    },
+    stroke: {
+      lineCap: 'round'
+    },
+    labels: [`${summary.done} / ${summary.total} Modules`],
+  };
 
-  container.innerHTML = `
-    <div class="progress-grid">
-      <div class="donut-wrapper">
-        <svg class="donut" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-          <circle class="donut-bg" cx="${size/2}" cy="${size/2}" r="${radius}" stroke-width="${stroke}" />
-          <circle class="donut-fg" cx="${size/2}" cy="${size/2}" r="${radius}" stroke-width="${stroke}"
-                  stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" />
-          <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" class="donut-label">${summary.percent}%</text>
-        </svg>
-      </div>
-      <div class="progress-meta">
-        <h4 class="course-title">${HARDCODED_COURSE.title}</h4>
-        <p class="course-desc">${HARDCODED_COURSE.description}</p>
-        <div class="bar-row">
-          <div class="bar-track"><div class="bar-fill" style="width:${summary.percent}%;"></div></div>
-          <span class="bar-text">${summary.done}/${summary.total} modules</span>
-        </div>
-        <a href="course_detail.html?id=${HARDCODED_COURSE.id}" class="btn small">${summary.done ? 'Continue' : 'Start Learning'}</a>
-      </div>
-    </div>
-  `;
+  const chartContainer = document.getElementById('chart-container');
+  if (chartContainer) {
+    chartContainer.innerHTML = ''; // Clear old chart
+    const chart = new ApexCharts(chartContainer, options);
+    chart.render();
+  }
 }
 
+// Function to render the "Continue Learning" card
+function renderProgressList(summary) {
+  const progressList = document.getElementById('progress-list-minimal');
+  if (progressList) {
+    const s = summary;
+    progressList.innerHTML = `
+      <div class="d-flex flex-column h-100">
+        <h5 class="card-title">${HARDCODED_COURSE.title}</h5>
+        <p class="card-text small text-muted">${HARDCODED_COURSE.description}</p>
+        <div class="mt-auto">
+          <div class="progress mb-2" style="height: 10px;">
+            <div class="progress-bar bg-success" role="progressbar" style="width: ${s.percent}%" aria-valuenow="${s.percent}"></div>
+          </div>
+          <p class="small mb-2"><strong>Progress:</strong> ${s.done}/${s.total} (${s.percent}%)</p>
+          <a class="btn btn-success w-100" href="course_detail.html?id=${HARDCODED_COURSE.id}">
+            ${s.done > 0 ? 'Continue Learning' : 'Start Course'}
+          </a>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Main Auth Listener
 onAuthStateChanged(auth, async (user) => {
   const usernameSpan = document.getElementById('username-placeholder');
-  const container = document.getElementById('progress-modern');
   const guestMode = localStorage.getItem('guest_mode') === '1';
 
-  let displayName = 'Guest';
   if (user) {
     try {
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists() && userDoc.data().username) {
-        displayName = userDoc.data().username;
+        usernameSpan.textContent = userDoc.data().username;
       } else {
-        displayName = user.email;
+        usernameSpan.textContent = user.email;
       }
     } catch (e) {
       console.error('Error fetching user profile', e);
-      if (user.email) displayName = user.email;
+      usernameSpan.textContent = user.email;
     }
-  }
-  usernameSpan.textContent = displayName;
 
-  const summary = getProgressSummary();
-  if (container) {
-    renderModernProgress(container, summary);
-  }
-  const greetingEl = document.getElementById('greeting');
-  if (greetingEl) {
-    const hour = new Date().getHours();
-    const bucket = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-    greetingEl.innerHTML = `${bucket}, <span id="username-placeholder">${displayName}</span> \uD83D\uDC4B`;
+    // Show progress for the hardcoded course
+    const s = getProgressSummary();
+    renderProgressChart(s);
+    renderProgressList(s);
+
+  } else if (guestMode) {
+    usernameSpan.textContent = 'Guest';
+    const s = getProgressSummary();
+    renderProgressChart(s);
+    renderProgressList(s);
   }
 });

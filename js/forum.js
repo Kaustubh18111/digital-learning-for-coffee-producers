@@ -2,34 +2,38 @@ import { auth, db, collection, addDoc, getDocs, onAuthStateChanged, query, order
 
 const postsList = document.getElementById('posts-list');
 const newPostForm = document.getElementById('new-post-form');
-const redditList = document.getElementById('reddit-posts'); // This element is no longer used, but we'll check for it
+const redditList = document.getElementById('reddit-posts');
 
 const renderPosts = async () => {
   if (!postsList) return;
-  postsList.innerHTML = '<li>Loading posts...</li>';
+  postsList.innerHTML = '<div class="list-group-item">Loading posts...</div>';
   try {
     const postsRef = collection(db, 'posts');
     const q = query(postsRef, orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
     if (snap.empty) {
-      postsList.innerHTML = '<li>Be the first to ask a question!</li>';
+      postsList.innerHTML = '<div class="list-group-item">No posts yet. Be the first!</div>';
       return;
     }
     postsList.innerHTML = '';
     snap.forEach(docSnap => {
       const post = docSnap.data();
-      const li = document.createElement('li');
-      li.className = 'post-item';
-      li.innerHTML = `
-        <h4>${post.title || 'Untitled'}</h4>
-        <div class="meta">By ${post.userId || 'Unknown'}${post.createdAt ? ' • ' + new Date(post.createdAt.seconds * 1000).toLocaleString() : ''}</div>
-        <p>${post.content || ''}</p>
+      const postEl = document.createElement('a');
+      postEl.href = "#";
+      postEl.className = 'list-group-item list-group-item-action flex-column align-items-start';
+      postEl.innerHTML = `
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">${post.title || 'Untitled'}</h5>
+          <small class="text-muted">${post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() : ''}</small>
+        </div>
+        <p class="mb-1">${post.content || ''}</p>
+        <small class="text-muted">By ${post.userId || 'Unknown'}</small>
       `;
-      postsList.appendChild(li);
+      postsList.appendChild(postEl);
     });
   } catch (e) {
     console.error('Error loading posts', e);
-    postsList.innerHTML = '<li>Error loading posts.</li>';
+    postsList.innerHTML = '<div class="list-group-item text-danger">Error loading posts.</div>';
   }
 };
 
@@ -69,19 +73,16 @@ if (newPostForm) {
   });
 }
 
-// Fetch and render Reddit posts from r/IndiaCoffee with multi-proxy CORS fallback
 const renderReddit = async () => {
-  if (!redditList) return; // Safely exit if element not found
-  redditList.innerHTML = '<li class="post-item">Loading Reddit posts...</li>';
-
-  const BASE = 'https://www.reddit.com/r/IndiaCoffee/.json?limit=12';
+  if (!redditList) return;
+  redditList.innerHTML = '<div class="list-group-item">Loading Reddit posts...</div>';
+  const BASE = 'https://www.reddit.com/r/IndiaCoffee/.json?limit=5';
   const SOURCES = [
     BASE,
     'https://cors.isomorphic-git.org/' + BASE,
     'https://api.allorigins.win/raw?url=' + encodeURIComponent(BASE),
     'https://corsproxy.io/?' + encodeURIComponent(BASE)
   ];
-
   const fetchWithFallback = async (urls) => {
     let lastError;
     for (const u of urls) {
@@ -89,40 +90,33 @@ const renderReddit = async () => {
         const res = await fetch(u, { cache: 'no-store' });
         if (!res.ok) { lastError = new Error('HTTP ' + res.status); continue; }
         return await res.json();
-      } catch (e) {
-        lastError = e;
-      }
+      } catch (e) { lastError = e; }
     }
     throw lastError || new Error('All fetch attempts failed');
   };
-
   try {
     const data = await fetchWithFallback(SOURCES);
-    const items = (data && data.data && Array.isArray(data.data.children)) ? data.data.children : [];
+    const items = (data?.data?.children || []).filter(c => c && c.data);
     if (items.length === 0) {
-      redditList.innerHTML = '<li class="post-item">No Reddit posts found.</li>';
+      redditList.innerHTML = '<div class="list-group-item">No Reddit posts found.</div>';
       return;
     }
     redditList.innerHTML = '';
-    for (const child of items) {
-      const p = child && child.data ? child.data : null;
-      if (!p) continue;
-      const url = p.url_overridden_by_dest || ('https://www.reddit.com' + p.permalink);
-      const li = document.createElement('li');
-      li.className = 'post-item';
-      li.innerHTML = `
-        <h4><a href="${url}" target="_blank" rel="noopener">${p.title || 'Untitled Reddit Post'}</a></h4>
-        <div class="meta">by u/${p.author} • r/${p.subreddit} • ${p.ups} upvotes</div>
+    for (const { data: p } of items) {
+      const postEl = document.createElement('a');
+      postEl.className = 'list-group-item list-group-item-action';
+      postEl.href = p.url_overridden_by_dest || ('https://www.reddit.com' + p.permalink);
+      postEl.target = '_blank';
+      postEl.rel = 'noopener';
+      postEl.innerHTML = `
+        <h6 class="mb-1 small">${p.title || 'Untitled Reddit Post'}</h6>
+        <small class="text-muted">by u/${p.author} • ${p.ups} upvotes</small>
       `;
-      redditList.appendChild(li);
+      redditList.appendChild(postEl);
     }
   } catch (e) {
     console.error('Error loading Reddit', e);
-    redditList.innerHTML = `
-      <li class="post-item">
-        Could not load Reddit posts due to CORS or network limits.
-        <a href="https://www.reddit.com/r/IndiaCoffee/" target="_blank" rel="noopener">Open r/IndiaCoffee on Reddit</a>.
-      </li>`;
+    redditList.innerHTML = '<div class="list-group-item text-danger">Error loading Reddit posts.</div>';
   }
 };
 

@@ -6,36 +6,41 @@ const loadCourses = async () => {
   let html = '';
   try {
     const querySnapshot = await getDocs(collection(db, 'courses'));
-    if (querySnapshot.empty) {
+
+    if (querySnapshot.empty && !HARDCODED_COURSE) {
       grid.innerHTML = '<p>No courses are available yet.</p>';
       return;
     }
-    let foundHardcodedInFirestore = false;
+
+    // Render Firestore courses
     querySnapshot.forEach((docSnap) => {
       const course = docSnap.data();
-      if (course.title === HARDCODED_COURSE.title) {
-        foundHardcodedInFirestore = true;
-      }
       html += `
-        <div class="course-card">
-          <div class="thumb">IMG</div>
-          <h3>${course.title}</h3>
-          <p>${course.description || ''}</p>
-          <a href="course_detail.html?id=${docSnap.id}" class="btn small">Start Learning</a>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">${course.title}</h5>
+              <p class="card-text small text-muted flex-grow-1">${course.description || ''}</p>
+              <a href="course_detail.html?id=${docSnap.id}" class="btn btn-success mt-auto">Start Learning</a>
+            </div>
+          </div>
         </div>
       `;
     });
-    // Only show the hardcoded fallback if Firestore does NOT contain it.
-    if (!foundHardcodedInFirestore) {
-      html += `
-        <div class="course-card">
-          <div class="thumb">IMG</div>
-          <h3>${HARDCODED_COURSE.title}</h3>
-          <p>${HARDCODED_COURSE.description}</p>
-          <a href="course_detail.html?id=${HARDCODED_COURSE.id}" class="btn small">Start Learning</a>
+
+    // Render hardcoded course
+    html += `
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">${HARDCODED_COURSE.title}</h5>
+            <p class="card-text small text-muted flex-grow-1">${HARDCODED_COURSE.description}</p>
+            <a href="course_detail.html?id=${HARDCODED_COURSE.id}" class="btn btn-success mt-auto">Start Learning</a>
+          </div>
         </div>
-      `;
-    }
+      </div>
+    `;
+
     grid.innerHTML = html;
   } catch (error) {
     console.error('Error loading courses:', error);
