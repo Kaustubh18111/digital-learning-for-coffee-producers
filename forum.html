@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forum • CoffeeLearn</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .embed-wrapper { background:#fff; border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding:0; overflow:hidden; }
+    .embed-header { padding:0.75rem 1rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .embed-body { height:70vh; }
+    .embed-body iframe { width:100%; height:100%; border:0; }
+  </style>
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+  <main class="container">
+    <section class="panel">
+      <h2>IndiaCoffee Reddit</h2>
+      <p class="muted">We try to show the subreddit directly below. If your browser blocks it, use the button to open it in a new tab.</p>
+      <div class="embed-wrapper">
+        <div class="embed-header">
+          <span>https://www.reddit.com/r/IndiaCoffee/</span>
+          <a class="btn small" href="https://www.reddit.com/r/IndiaCoffee/" target="_blank" rel="noopener">Open on Reddit</a>
+        </div>
+        <div class="embed-body">
+          <iframe src="https://www.reddit.com/r/IndiaCoffee/" title="IndiaCoffee subreddit" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe>
+        </div>
+      </div>
+      <noscript>
+        <p>Your browser has JavaScript disabled. Visit the subreddit directly: <a href="https://www.reddit.com/r/IndiaCoffee/" target="_blank" rel="noopener">r/IndiaCoffee</a>.</p>
+      </noscript>
+    </section>
+  </main>
+  <div id="footer-placeholder"></div>
+  <script type="module" src="js/firebase-init.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
