@@ -7,9 +7,9 @@ function renderProgressChart(summary) {
   const options = {
     chart: {
       type: 'radialBar',
-      height: 350,
+      height: 520, // Increased vertical height
       sparkline: {
-        enabled: true
+        enabled: false // Disable sparkline to allow standard padding
       }
     },
     series: [summary.percent],
