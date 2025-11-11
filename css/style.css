@@ -140,3 +140,72 @@
 .list-group-item-action:hover {
   background-color: var(--bs-body-tertiary-bg);
 }
+
+/*
+ * 5. NEW SIDEBAR LAYOUT
+ */
+
+body {
+  /* This prevents the main content from scrolling when sidebar overflows */
+  overflow: hidden;
+}
+
+.page-wrapper {
+  display: grid;
+  grid-template-columns: 280px 1fr; /* Sidebar width | Content */
+  height: 100vh;
+}
+
+.sidebar {
+  height: 100vh;
+  overflow-y: auto;
+  /* Use the GitHub dark color for the sidebar */
+  background-color: #161B22 !important; 
+}
+
+.content-wrapper {
+  height: 100vh;
+  overflow-y: auto; /* This makes the *content* scrollable */
+  display: flex;
+  flex-direction: column;
+}
+
+.content-wrapper main {
+  flex-grow: 1; /* Makes the main content push the footer down */
+}
+
+/* Style sidebar links */
+.sidebar .nav-link {
+  font-weight: 500;
+  color: var(--bs-body-color);
+}
+
+.sidebar .nav-link:hover {
+  background-color: var(--bs-body-tertiary-bg);
+}
+
+/* Active link style */
+.sidebar .nav-link.active {
+  background-color: var(--bs-primary-bg-subtle);
+  color: var(--bs-primary);
+  font-weight: 600;
+}
+
+/* Handle mobile */
+@media (max-width: 992px) {
+  .page-wrapper {
+    grid-template-columns: 1fr; /* Stack on mobile */
+  }
+  .sidebar {
+    height: auto; /* Let sidebar be normal height */
+    position: static;
+  }
+  .content-wrapper, body {
+    height: auto;
+    overflow-y: visible;
+  }
+  .sidebar .navbar-brand {
+    display: none; /* Hide brand in main content area */
+  }
+  /* This is a simple mobile nav, not a fancy slide-out */
+}
