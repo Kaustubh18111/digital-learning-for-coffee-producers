@@ -1,14 +1,68 @@
-/* Set a custom theme color for Bootstrap */
-:root {
-  --bs-primary: #2f855a;
-  --bs-primary-rgb: 47, 133, 90;
-  --bs-body-bg: #f8f9fa;
+/*
+ * GITHUB DARK + COFFEE THEME
+ */
+
+/* 1. Define our new "Coffee" accent colors */
+[data-bs-theme="dark"] {
+  /* This is our main "coffee" button color */
+  --bs-primary: #C4A484; /* "Crema" */
+  --bs-primary-rgb: 196, 164, 132;
+  --bs-primary-text-emphasis: #FFF;
+  --bs-primary-bg-subtle: #3E3025;
+  --bs-primary-border-subtle: #85684F;
+  
+  /* This is our "success" color */
+  --bs-success: #2f855a; /* "Green Bean" */
+  --bs-success-rgb: 47, 133, 90;
+  --bs-success-text-emphasis: #FFF;
+  --bs-success-bg-subtle: #0F2B1D;
+  --bs-success-border-subtle: #1E593A;
+
+  /* This is the main page background */
+  --bs-body-bg: #0D1117; 
+  /* This is for cards, navbars, etc. */
+  --bs-body-tertiary-bg: #161B22; 
+  /* This is for borders */
+  --bs-border-color: #30363D;
+  --bs-body-color: #C9D1D9;
+  --bs-body-color-rgb: 201, 209, 217;
+  
+  --bs-link-color: var(--bs-primary);
+  --bs-link-color-rgb: var(--bs-primary-rgb);
+  --bs-link-hover-color: #D2B48C; /* Lighter tan */
 }
 
-/* --- Skillshare UI Layout --- */
+/* 2. Style all Bootstrap components to use the new colors */
+.btn-primary {
+  --bs-btn-bg: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-bg: #D2B48C;
+  --bs-btn-hover-border-color: #D2B48C;
+  --bs-btn-active-bg: #D2B48C;
+  --bs-btn-active-border-color: #D2B48C;
+  --bs-btn-color: #332211; /* Dark text for light button */
+  --bs-btn-hover-color: #332211;
+  --bs-btn-active-color: #332211;
+}
+
+.btn-success {
+  --bs-btn-bg: var(--bs-success);
+  --bs-btn-border-color: var(--bs-success);
+  --bs-btn-hover-bg: #3c9d6f;
+  --bs-btn-hover-border-color: #3c9d6f;
+  --bs-btn-color: #FFF;
+  --bs-btn-hover-color: #FFF;
+}
+
+/* Fix text color on buttons */
+.btn {
+  font-weight: 600;
+}
+
+/* 3. Tweak the Skillshare layout for the new dark theme */
 .course-player-layout {
   display: grid;
-  grid-template-columns: 1fr 340px; /* Main content | Sidebar */
+  grid-template-columns: 1fr 340px;
   gap: 2rem;
 }
 
@@ -24,7 +78,7 @@
 
 .video-container {
   position: relative;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  padding-top: 56.25%; /* 16:9 */
   height: 0;
   background: #000;
   border-radius: var(--bs-border-radius);
@@ -40,7 +94,8 @@
 }
 
 .module-sidebar {
-  background: #fff;
+  /* bg-body-tertiary will be #161B22 */
+  background: var(--bs-body-tertiary-bg);
   border: 1px solid var(--bs-border-color);
   border-radius: var(--bs-border-radius);
   padding: 1rem;
@@ -54,15 +109,34 @@
   align-items: center;
   gap: 0.75rem;
   font-size: 0.9rem;
-  border-right: none;
-  border-left: none;
+  /* Make list items transparent to show sidebar bg */
+  --bs-list-group-bg: transparent; 
+  --bs-list-group-border-color: var(--bs-border-color);
 }
 
 .module-sidebar .list-group-item.active {
+  /* Use the subtle "coffee" background for active module */
+  background-color: var(--bs-primary-bg-subtle);
+  border-color: var(--bs-primary-border-subtle);
+  color: var(--bs-primary);
   font-weight: bold;
 }
 
 .module-sidebar .list-group-item input[type="checkbox"] {
   flex-shrink: 0;
   pointer-events: none;
+  /* Style the checkbox */
+  --bs-form-check-bg: var(--bs-body-bg);
+  --bs-form-check-border: var(--bs-border-color);
+}
+
+/* 4. Tweak the Login Page */
+/* Make the two-column card on login page look right */
+.card-body .bg-light {
+  background-color: var(--bs-body-tertiary-bg) !important;
+}
+
+/* 5. Tweak Forum Page */
+.list-group-item-action:hover {
+  background-color: var(--bs-body-tertiary-bg);
 }
