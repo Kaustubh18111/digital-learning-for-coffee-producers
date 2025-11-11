@@ -63,7 +63,7 @@ function renderProgressList(summary) {
     const s = summary;
     progressList.innerHTML = `
       <div class="d-flex flex-column h-100">
-        <img src="${HARDCODED_COURSE.thumbnail}" class="card-img-top mb-3" alt="${HARDCODED_COURSE.title}">
+        <img src="${HARDCODED_COURSE.thumbnail}" class="card-img-top mb-3 rounded" alt="${HARDCODED_COURSE.title}">
         <h5 class="card-title">${HARDCODED_COURSE.title}</h5>
         <p class="card-text small text-muted">${HARDCODED_COURSE.description}</p>
         <div class="mt-auto">

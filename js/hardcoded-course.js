@@ -3,7 +3,7 @@ export const HARDCODED_COURSE = {
   id: 'low-intervention-farming',
   title: 'Low Intervention Farming',
   description: 'A course on low-intervention and regenerative farming principles.',
-  thumbnail: 'img/course-thumbnail.jpg', // Added thumbnail path
+  thumbnail: 'img/course-thumbnail.png', // Added thumbnail path
   modules: [
     {
       id: 'module_1',
