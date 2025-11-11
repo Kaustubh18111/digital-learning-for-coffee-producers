@@ -6,10 +6,10 @@
   <title>Forum • CoffeeLearn</title>
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    .embed-wrapper { background:#fff; border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding:0; overflow:hidden; }
-    .embed-header { padding:0.75rem 1rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-    .embed-body { height:70vh; }
-    .embed-body iframe { width:100%; height:100%; border:0; }
+    .posts { list-style: none; padding: 0; display: grid; gap: 0.75rem; }
+    .post-item { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.9rem; box-shadow: var(--shadow); }
+    .post-item h4 { margin: 0 0 .25rem; font-size: 1rem; }
+    .post-item .meta { font-size: .75rem; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -17,23 +17,44 @@
   <main class="container">
     <section class="panel">
       <h2>IndiaCoffee Reddit</h2>
-      <p class="muted">We try to show the subreddit directly below. If your browser blocks it, use the button to open it in a new tab.</p>
-      <div class="embed-wrapper">
-        <div class="embed-header">
-          <span>https://www.reddit.com/r/IndiaCoffee/</span>
-          <a class="btn small" href="https://www.reddit.com/r/IndiaCoffee/" target="_blank" rel="noopener">Open on Reddit</a>
-        </div>
-        <div class="embed-body">
-          <iframe src="https://www.reddit.com/r/IndiaCoffee/" title="IndiaCoffee subreddit" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe>
-        </div>
-      </div>
-      <noscript>
-        <p>Your browser has JavaScript disabled. Visit the subreddit directly: <a href="https://www.reddit.com/r/IndiaCoffee/" target="_blank" rel="noopener">r/IndiaCoffee</a>.</p>
-      </noscript>
+      <p class="muted">Top posts from <a href="https://www.reddit.com/r/IndiaCoffee/" target="_blank" rel="noopener">r/IndiaCoffee</a>. We only show titles and metadata here.</p>
+      <ul class="posts" id="reddit-posts"></ul>
     </section>
   </main>
   <div id="footer-placeholder"></div>
   <script type="module" src="js/firebase-init.js"></script>
   <script type="module" src="js/main.js"></script>
+  <script type="module">
+    const list = document.getElementById('reddit-posts');
+    async function renderReddit() {
+      if (!list) return;
+      list.innerHTML = '<li class="post-item">Loading Reddit posts...</li>';
+      try {
+        const res = await fetch('https://www.reddit.com/r/IndiaCoffee/.json?limit=12');
+        if (!res.ok) throw new Error('Failed to load Reddit');
+        const data = await res.json();
+        const items = (data?.data?.children || []).filter(c => c && c.data);
+        if (items.length === 0) {
+          list.innerHTML = '<li class="post-item">No Reddit posts found.</li>';
+          return;
+        }
+        list.innerHTML = '';
+        for (const { data: p } of items) {
+          const url = p.url_overridden_by_dest || ('https://www.reddit.com' + p.permalink);
+          const li = document.createElement('li');
+          li.className = 'post-item';
+          li.innerHTML = `
+            <h4><a href="${url}" target="_blank" rel="noopener">${p.title || 'Untitled Reddit Post'}</a></h4>
+            <div class="meta">by u/${p.author} • r/${p.subreddit} • ${p.ups} upvotes</div>
+          `;
+          list.appendChild(li);
+        }
+      } catch (e) {
+        console.error('Error loading Reddit', e);
+        list.innerHTML = '<li class="post-item">Error loading Reddit posts.</li>';
+      }
+    }
+    renderReddit();
+  </script>
 </body>
 </html>
