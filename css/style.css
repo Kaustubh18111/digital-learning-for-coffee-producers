@@ -105,3 +105,140 @@ input:focus, textarea:focus { outline:2px solid #c6f6d5; }
 .alert.info { background: #ebf8ff; border: 1px solid #bee3f8; color: #2c5282; }
 .alert.success { background: #f0fff4; border: 1px solid #c6f6d5; color: #2f855a; }
 .alert.danger { background: #fff5f5; border: 1px solid #fed7d7; color: #c53030; }
+
+/* --- New Skillshare UI Overhaul --- */
+    
+/* 1. Main Course Player Layout */
+.course-player-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px; /* Main content | Sidebar */
+  gap: 2rem;
+  width: min(1400px, 96%);
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+/* On smaller screens, stack them */
+@media (max-width: 1024px) {
+  .course-player-layout {
+    grid-template-columns: 1fr; /* Stack columns */
+  }
+  .module-sidebar {
+    grid-row: 1; /* Move sidebar to the top */
+  }
+}
+
+.main-content .video-container {
+  background: #000;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+  min-height: 450px; /* Set a min height */
+  position: relative;
+}
+
+.main-content #youtube-player {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* 2. Module Sidebar */
+.module-sidebar {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 0.5rem 1rem 1rem;
+  height: fit-content;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.module-sidebar h3 {
+  margin-top: 0;
+  padding-left: 0.5rem;
+}
+.module-sidebar p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  padding-left: 0.5rem;
+  margin: -0.5rem 0 1rem;
+}
+
+.module-sidebar ol {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.module-sidebar .module-item {
+  padding: 0.8rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.module-sidebar .module-item:last-child {
+  border-bottom: none;
+}
+
+.module-sidebar .module-item:hover {
+  background-color: var(--bg);
+}
+
+.module-sidebar .module-item.active {
+  background-color: #e6fffa;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.module-sidebar .module-item input[type="checkbox"] {
+  flex-shrink: 0;
+  pointer-events: none; /* We control it from JS */
+}
+
+/* 3. Tab Navigation */
+.tab-nav {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.tab-link {
+  padding: 0.8rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--muted);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px; /* Overlaps the container border */
+}
+
+.tab-link.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+.tab-panel {
+  display: none; /* Hide all panels by default */
+}
+
+.tab-panel.active {
+  display: block; /* Show the active one */
+}
+
+/* Make the moved forum form look correct */
+#discussions-tab .ask-form {
+  max-width: 700px;
+  margin-bottom: 2rem;
+}

@@ -9,12 +9,11 @@
     ],
     "rewrites": [
       {"source": "/dashboard", "destination": "/dashboard.html"},
-      {"source": "/courses", "destination": "/courses.html"},
-      {"source": "/forum", "destination": "/forum.html"},
-      {"source": "/forum", "destination": "/forum.html"}
+      {"source": "/courses", "destination": "/courses.html"}
     ]
   },
   "firestore": {
     "rules": "firestore.rules"
   }
 }
+
